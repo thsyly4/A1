@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الكيمياء - النموذج (1)</title>
+    <style>
+        :root { --bg: #f8fafc; --panel: #ffffff; --light-blue: #e0f2fe; --primary: #0284c7; --success: #16a34a; --danger: #dc2626; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: #1e293b; }
+        .container { max-width: 950px; margin: 20px auto; background: var(--panel); border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0; }
+        
+        .header-brand { 
+            background: var(--light-blue); 
+            padding: 20px 40px; 
+            text-align: center;
+            border-bottom: 2px solid #bae6fd;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .welcome-screen { padding: 50px 20px; text-align: center; }
+        .welcome-screen h1 { color: #0f172a; margin-bottom: 25px; }
+        input[type="text"] { width: 60%; padding: 16px; border: 2px solid #cbd5e1; border-radius: 15px; font-size: 18px; text-align: center; outline: none; }
+
+        .quiz-screen { display: none; padding: 30px; }
+        .stats-bar { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 15px; font-weight: bold; background: #f1f5f9; padding: 12px; border-radius: 12px; }
+
+        .q-card { background: #fff; padding: 10px; border-radius: 15px; margin-bottom: 25px; }
+        .q-text { font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.6; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .options-grid { grid-template-columns: 1fr; } }
+        
+        .option { padding: 18px; background: #fff; border: 2px solid #e2e8f0; border-radius: 15px; cursor: pointer; transition: 0.3s; font-size: 18px; text-align: right; }
+        .option:hover { border-color: var(--primary); background: #f0f9ff; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success) !important; }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger) !important; }
+
+        .feedback-box { margin-top: 25px; padding: 20px; border-radius: 15px; display: none; line-height: 1.6; border: 1px solid #bae6fd; font-size: 16px; background: var(--light-blue); color: #000000; }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 16px 50px; border-radius: 15px; cursor: pointer; font-size: 19px; font-weight: bold; margin-top: 20px; }
+        #next-btn { background: #334155; display: none; }
+
+        #result-screen { display:none; padding: 30px; }
+        .summary-table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 14px; background: white; }
+        .summary-table th, .summary-table td { padding: 12px; border: 1px solid #e2e8f0; text-align: right; }
+        .summary-table th { background: #f1f5f9; color: #475569; }
+        .fb-cell { font-size: 12px; color: #444; background: #f9fbff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-brand">🧪 اختبار الكيمياء - النموذج (1)</div>
+
+    <div id="start-screen" class="welcome-screen">
+        <h1>اختبار كيمياء تحصيلي</h1>
+        <input type="text" id="student-name" placeholder="أدخل اسمك الكريم للبدء">
+        <br>
+        <button class="btn" onclick="startQuiz()">ابدأ الاختبار الآن 🚀</button>
+    </div>
+
+    <div id="quiz-screen" class="quiz-screen">
+        <div class="stats-bar">
+            <span>👤 الطالب: <span id="display-name" style="color:var(--primary)"></span></span>
+            <span>⏱️ المتبقي: <span id="timer" style="color:var(--danger)">60</span> ثانية</span>
+        </div>
+        <div class="q-card">
+            <div style="color: var(--primary); font-weight: bold; margin-bottom: 8px;" id="q-number"></div>
+            <div class="q-text" id="q-text"></div>
+        </div>
+        <div class="options-grid" id="options-container"></div>
+        <div id="feedback-box" class="feedback-box">
+            <strong id="fb-title" style="display:block; margin-bottom:5px;"></strong>
+            <span id="fb-text"></span>
+        </div>
+        <div style="text-align: center;">
+            <button id="next-btn" class="btn" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <div style="text-align:center;">
+            <h2 id="res-title"></h2>
+            <div id="res-score" style="font-size: 30px; font-weight: 900; color: var(--success); margin: 15px;"></div>
+        </div>
+        <h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px;">📊 ملخص الإجابات:</h3>
+        <table class="summary-table">
+            <thead>
+                <tr><th>#</th><th>السؤال</th><th>إجابتك</th><th>الصحيحة</th><th>التغذية الراجعة</th></tr>
+            </thead>
+            <tbody id="summary-body"></tbody>
+        </table>
+        <div style="text-align:center; margin-top:20px;">
+            <button class="btn" onclick="location.reload()">إعادة المحاولة 🔄</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // [نفس مصفوفة الأسئلة والوظائف البرمجية الخاصة بك تضاف هنا]
+    const questions = [
+        { q: "أصغر جزء من العنصر يحمل صفات ذلك العنصر هو:", options: ["الجزيء", "الذرة", "البروتون", "النواة"], correct: 1, fb: "الذرة هي الوحدة الأساسية المكونة للمادة." }
+        // ... تكملة مصفوفة الأسئلة
+    ];
+    // ... بقية دوال الـ JavaScript
+</script>
+
+</body>
+</html>
